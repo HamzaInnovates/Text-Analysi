@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -38,11 +39,13 @@ func AnalyzeText(text string) TextAnalysisResults {
 			inParagraph = true
 		}
 	}
+
 	if inParagraph {
 		paragraph := paragraphBuilder.String()
 		results.ParagraphLengths = append(results.ParagraphLengths, len(paragraph))
 		results.ParagraphCount++
 	}
+
 	for _, char := range text {
 		if unicode.IsPunct(char) {
 			results.PunctuationCount++
@@ -53,17 +56,18 @@ func AnalyzeText(text string) TextAnalysisResults {
 	}
 	results.CharacterCountWithSpaces = len(text)
 	results.WordCount = len(strings.Fields(text))
-
 	return results
 }
 
 func main() {
-
-	data, err := os.ReadFile("example.txt")
+	file_path := ""
+	startTime := time.Now()
+	data, err := os.ReadFile(file_path)
 	if err != nil {
 		fmt.Println("Error while reading file:", err)
 		return
 	}
+
 	results := AnalyzeText(string(data))
 	fmt.Println("File Content:\n", string(data))
 	fmt.Println("\nAnalysis Results:")
@@ -76,4 +80,6 @@ func main() {
 	for i, length := range results.ParagraphLengths {
 		fmt.Printf("Paragraph %d: %d characters\n", i+1, length)
 	}
+	elapsedTime := time.Since(startTime)
+	fmt.Printf("\nExecution time: %s\n", elapsedTime)
 }
